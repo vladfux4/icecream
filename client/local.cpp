@@ -268,6 +268,11 @@ int build_local(CompileJob &job, MsgChannel *local_daemon, struct rusage *used)
     string argstxt;
 
     for (list<string>::const_iterator it = arguments.begin(); it != arguments.end(); ++it) {
+        // Filter out fdirectives-only, as this may be present when we fall back from a
+        // remote to a local compile, but this flag might be the reason we need to fall back.
+        if (it->compare("-fdirectives-only") == 0)
+            continue;
+
         argv.push_back(strdup(it->c_str()));
         argstxt += ' ';
         argstxt += *it;
